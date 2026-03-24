@@ -17,6 +17,7 @@ local Lots = {}
 local cardInLot = {}
 
 local cardBeingDragged = nil
+local lotBeingDragged = nil
 --#endregion
 
 --#region variaveis para debug
@@ -75,6 +76,7 @@ function Manager:update(dt)
     --#region lot logica
     -- revisar codigo para aprender mais sobre algoritomo
     if not Mouse.isPressed then
+        --#region colocar a carta dentro do lote
         if cardBeingDragged ~= nil then
             local foundLotIndex = nil -- variavel para saber qual é o index do lot e se ele foi dropado em um lot
 
@@ -143,6 +145,24 @@ function Manager:update(dt)
             -- Finaliza o arrasto
             cardBeingDragged = nil
         end
+        --#endregion
+    end
+
+    --#region Pegando o lote
+    for i = #Lots, 1, -1 do
+        local lot = Lots[i]
+        local isMouseOnlot = lot:isMouseOnLot(Mouse.x, Mouse.y)
+
+        if isMouseOnlot and Mouse.isPressed then
+            Mouse.isHovering = true
+            lot.isDragging = true
+            lotBeingDragged = lot
+        end
+    end
+
+    if lotBeingDragged ~= nil and Mouse.isPressed then
+        lotBeingDragged.x = lotBeingDragged.x + ((Mouse.x - lotBeingDragged.width/2 + 20) - lotBeingDragged.x) * dt * 15
+        lotBeingDragged.y = lotBeingDragged.y + ((Mouse.y - lotBeingDragged.height/2 - 20) - lotBeingDragged.y) * dt * 15
     end
     --#endregion
 end

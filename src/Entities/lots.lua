@@ -14,9 +14,10 @@ function Lot:new(x, y)
     setmetatable(newLot, self)
 
     --#region variaveis
-    newLot.width = 80  -- largura
-    newLot.height = 110  -- altura
+    newLot.width = 110  -- largura
+    newLot.height = 80  -- altura
     newLot.count = 0
+    newLot.isDragging = false
     --#endregion
 
     return newLot
@@ -38,7 +39,7 @@ function Lot:isCardInLot(cardX, cardY)
 end
 
 function Lot:isMouseOnLot(MouseX, MouseY)
-    return MouseX >= self.x and (self.x + self.width) <= MouseX and MouseY >= self.y and (self.y + self.height) <= MouseY
+    return MouseX >= self.x and MouseX <= (self.x + self.width) and MouseY >= self.y and MouseY <= (self.y + self.height)
 end
 
 function Lot:CardStackedPosition(cardW, cardH)

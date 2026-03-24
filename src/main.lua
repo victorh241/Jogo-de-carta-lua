@@ -18,13 +18,6 @@ function lerp(a, b, dt)
     return b + (a-b) * math.exp(decay * dt)
 end
 
-local function spring(current, target, velocity, k, d, dt) -- depois fazer a animação
-    local force = -k * (current - target) - d * velocity
-    velocity = velocity + force * dt
-    current = current + velocity * dt
-    return current, velocity
-end
-
 function love.load()
     love.window.setMode(800, 600)
     love.graphics.setBackgroundColor(0.2, 0.2, 0.3)
