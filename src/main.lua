@@ -148,8 +148,8 @@ function love.update(dt)
 
     --#region animação pra pegar a carta
     if cardBeingDragged ~= nil and Mouse.isPressed then
-        cardBeingDragged.x = cardBeingDragged.x + ((Mouse.x - cardBeingDragged.width/2 + 20) - cardBeingDragged.x) * dt * 15
-        cardBeingDragged.y = cardBeingDragged.y + ((Mouse.y - cardBeingDragged.height/2 - 20) - cardBeingDragged.y) * dt * 15
+        cardBeingDragged.x = cardBeingDragged.x + ((Mouse.x - cardBeingDragged.width/2) - cardBeingDragged.x) * dt * 15
+        cardBeingDragged.y = cardBeingDragged.y + ((Mouse.y - cardBeingDragged.height/2 + 10) - cardBeingDragged.y) * dt * 15
     end
     --#endregion
 end

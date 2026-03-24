@@ -42,8 +42,8 @@ function Lot:isMouseOnLot(MouseX, MouseY)
 end
 
 function Lot:CardStackedPosition(cardW, cardH)
-    local targetX = self.x + (self.width / 2) - (cardW / 2)
-    local targetY = self.y + (self.height / 2) - (cardH / 2)
+    local targetX = self.x + (self.width / 2 - (cardW / 2))
+    local targetY = self.y + (self.height / 2 - (cardH / 2) - 20) -- valor off set
 
     if self.count > 0 then
         targetY = targetY + (20 * self.count) -- offset de 20

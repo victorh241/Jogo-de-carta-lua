@@ -15,8 +15,8 @@ function Card:new(x, y)
     setmetatable(newCard, Card)
 
     --#region variaveis de logica
-    newCard.height = 70 -- const
-    newCard.width = 100 -- const
+    newCard.height = 100 -- const
+    newCard.width = 70 -- const
     newCard.velX = 0
     newCard.velY = 0
     newCard.isDragging = false
@@ -43,7 +43,7 @@ function Card:load()
 end
 
 function Card:isCardPicked(MouseX, MouseY, isMouseDown, cardBeingDragged)
-    self.isHovering = isPointInRectangle(MouseX, MouseY, self.x, self.y, self.height, self.width)
+    self.isHovering = isPointInRectangle(MouseX, MouseY, self.x, self.y, self.width, self.height)
 
     if isMouseDown and self.isHovering and not cardBeingDragged then 
         self.isDragging = true
@@ -60,12 +60,12 @@ end
 function Card:draw()
     --retangulo interno
     love.graphics.setColor(1, 1, 1, 1) -- cor: branca
-    love.graphics.rectangle("fill", self.x, self.y, self.height, self.width)
+    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 
     --retangulo(linha) externo
     love.graphics.setColor(0, 0, 0)
     love.graphics.setLineWidth(1)
-    love.graphics.rectangle("line", self.x, self.y, self.height, self.width)
+    love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
     love.graphics.setColor(1, 1, 1)
 end
 
