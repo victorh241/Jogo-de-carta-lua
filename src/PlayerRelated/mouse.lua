@@ -15,8 +15,8 @@ function Mouse:load(x, y)
 end
 
 function Mouse:update(dt)
-    Mouse.x = love.mouse.getX()
-    Mouse.y = love.mouse.getY()
+    self.x = love.mouse.getX()
+    self.y = love.mouse.getY()
 end
 
 function Mouse:draw()

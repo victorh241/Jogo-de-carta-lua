@@ -14,6 +14,7 @@ local Lot = require("Entities/lots")
 -- #region variaveis para logica das entidades e outros
 local Cards = {}
 local Lots = {}
+local cardInLot = {}
 
 local cardBeingDragged = nil
 --#endregion
@@ -24,16 +25,15 @@ local debugNumber = 0
 --#endregion
 
 function Manager:load()
-    Mouse:load(0, 0)
 
     -- #region cards
     local CardTest1 = Card:new(400, 300)
     local CardTest2 = Card:new(300, 300)
     local CardTest3 = Card:new(200, 300)
 
-    table.insert(Cards, cardTest1)
-    table.insert(Cards, cardTest2)
-    table.insert(Cards, cardTest3)
+    table.insert(Cards, CardTest1)
+    table.insert(Cards, CardTest2)
+    table.insert(Cards, CardTest3)
     --#endregion
 
     --#region lots
@@ -43,7 +43,7 @@ function Manager:load()
 end
 
 function Manager:update(dt)
-    Mouse.update(dt)
+    Mouse:update(dt)
 
     --#region logica da carta
     Mouse.isHovering = false
@@ -60,8 +60,9 @@ function Manager:update(dt)
         if isCardPicked then
             cardBeingDragged = card
 
-            table.remove(card, i)
+            table.remove(Cards, i)
             table.insert(Cards, card)
+            break
         end
     end
 
@@ -147,5 +148,30 @@ function Manager:update(dt)
 end
 
 function Manager:draw()
+
+    --#region desenhar lots
+    for i, lot in ipairs(Lots) do
+        lot:draw()
+    end
+    --#endregion
+
+    --#region desenhar cartas
+    -- desenhar as cartas
+    for i, card in ipairs(Cards) do
+        card:draw()
+    end
+    --#endregion
+
+    --#region debug
+    -- texto pra debugar
+    love.graphics.setColor(1, 1, 1, 1) -- this is white
+    love.graphics.print(Mouse.x, 500, 20)
+    love.graphics.print(Mouse.y, 600, 20)
+    love.graphics.print(debugNumber, 600, 40)
+    -- #cards para saber o tamanho de uma tabela é dessa forma
+    --#endregion
+
     Mouse:draw()
 end
+
+return Manager
