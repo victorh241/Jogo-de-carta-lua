@@ -38,7 +38,7 @@ function Manager:load()
     --#endregion
 
     --#region lots
-    local lotTest1 = Lot:new(100, 200)
+    local lotTest1 = Lot:new(100, 200, "Misson")
     table.insert(Lots, lotTest1)
     --#endregion
 end

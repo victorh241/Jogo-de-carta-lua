@@ -72,7 +72,7 @@ function Card:draw()
 
     --quadrado do titulo
     --retagunlo externo
-    love.graphics.setColor(0,0,0)
+    love.graphics.setColor(0, 0, 0)
     love.graphics.setLineWidth(3)
     love.graphics.rectangle("line", self.x, self.y - self.height/4 + 5, self.width, 20)
     love.graphics.setColor(1, 1, 1)
@@ -81,7 +81,10 @@ function Card:draw()
     love.graphics.rectangle("fill", self.x, self.y - self.height/4 + 5, self.width, 20)
 
     --texto
+    love.graphics.setColor(0, 0, 0)
     love.graphics.printf(self.title, self.x,self.y - self.height/4 + 5, self.width,"center")
+
+    love.graphics.setColor(1,1,1)
 end
 
 return Card

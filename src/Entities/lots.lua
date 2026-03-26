@@ -1,4 +1,6 @@
 local entity = require("Entities/Entity")
+-- lote agora virou um fichario
+
 
 local Lot = {}
 -- Faz o Lot herdar da Entity
@@ -6,7 +8,7 @@ setmetatable(Lot, {__index = entity})
 -- Permite que as instâncias de Lot achem as funções de Lot
 Lot.__index = Lot
 
-function Lot:new(x, y)
+function Lot:new(x, y, name)
     -- 1. Cria a base usando a entity
     local newLot = entity:new("Lot", x, y)
 
@@ -18,6 +20,7 @@ function Lot:new(x, y)
     newLot.height = 80  -- altura
     newLot.count = 0
     newLot.isDragging = false
+    newLot.name = name or ""
     --#endregion
 
     return newLot
@@ -62,7 +65,19 @@ function Lot:draw()
     love.graphics.setColor(0, 0, 0)
     love.graphics.setLineWidth(2) -- Aumentei para 2 para ficar mais visível
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
-    
+
+    --cabeçalho titulo
+    --retangulo externo
+    love.graphics.rectangle("line", self.x, self.y - self.height/4 + 5, self.width, 20)
+    love.graphics.setColor(1, 1, 1)
+
+    --retangulo interno
+    love.graphics.rectangle("fill", self.x, self.y - self.height/4 + 5, self.width, 20)
+
+    --titulo
+    love.graphics.setColor(0,0,0)
+    love.graphics.printf(self.name, self.x, self.y - self.height/4 + 5, self.width, "center")
+
     -- Reset de cor para não afetar outros desenhos
     love.graphics.setColor(1, 1, 1)
 end
