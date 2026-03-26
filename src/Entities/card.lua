@@ -9,7 +9,7 @@ local function isPointInRectangle(px, py, rx, ry, rw, rh)
     return px >= rx and px <= (rx + rw) and py >= ry and py <= (ry + rh)
 end
 
-function Card:new(x, y)
+function Card:new(x, y, title)
     local newCard = entity:new("card", x, y) -- o tipo é fixo foda-se
 
     setmetatable(newCard, Card)
@@ -22,6 +22,7 @@ function Card:new(x, y)
     newCard.isDragging = false
     newCard.isInLot = false
     newCard.lotId = 0
+    newCard.title = title
     --#endregion
 
     --#region variaveis de atributos
@@ -67,6 +68,20 @@ function Card:draw()
     love.graphics.setLineWidth(1)
     love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
     love.graphics.setColor(1, 1, 1)
+
+
+    --quadrado do titulo
+    --retagunlo externo
+    love.graphics.setColor(0,0,0)
+    love.graphics.setLineWidth(3)
+    love.graphics.rectangle("line", self.x, self.y - self.height/4 + 5, self.width, 20)
+    love.graphics.setColor(1, 1, 1)
+
+    --retangulo interno
+    love.graphics.rectangle("fill", self.x, self.y - self.height/4 + 5, self.width, 20)
+
+    --texto
+    love.graphics.printf(self.title, self.x,self.y - self.height/4 + 5, self.width,"center")
 end
 
 return Card

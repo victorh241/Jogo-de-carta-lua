@@ -28,9 +28,9 @@ local debugNumber = 0
 function Manager:load()
 
     -- #region cards
-    local CardTest1 = Card:new(400, 300)
-    local CardTest2 = Card:new(300, 300)
-    local CardTest3 = Card:new(200, 300)
+    local CardTest1 = Card:new(400, 300, "Pedro")
+    local CardTest2 = Card:new(300, 300, "Sam")
+    local CardTest3 = Card:new(200, 300, "Diego")
 
     table.insert(Cards, CardTest1)
     table.insert(Cards, CardTest2)
@@ -141,11 +141,12 @@ function Manager:update(dt)
                     end
                 end
             end
-
-            -- Finaliza o arrasto
-            cardBeingDragged = nil
         end
         --#endregion
+
+        -- Finaliza o arrasto das entidades
+        cardBeingDragged = nil
+        lotBeingDragged = nil
     end
 
     --#region Pegando o lote
@@ -157,6 +158,9 @@ function Manager:update(dt)
             Mouse.isHovering = true
             lot.isDragging = true
             lotBeingDragged = lot
+
+            table.remove(Lots, i)
+            table.insert(Lots, lotBeingDragged)
         end
     end
 
@@ -184,7 +188,7 @@ function Manager:draw()
 
     --#region debug
     -- texto pra debugar
-    love.graphics.setColor(1, 1, 1, 1) -- this is white
+    love.graphics.setColor(1, 1, 1, 1)
     love.graphics.print(Mouse.x, 500, 20)
     love.graphics.print(Mouse.y, 600, 20)
     love.graphics.print(debugNumber, 600, 40)
