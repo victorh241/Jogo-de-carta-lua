@@ -32,14 +32,18 @@ function Lot:new(x, y, name)
     return newLot
 end
 
-function Lot:isMouseOnButton(MouseX, MouseY)
+--#region hover menu
+function Lot:isMouseOnButton(mx, my)
+    -- O botão ficará no canto superior direito do lote
     local bx = self.x + self.width - self.btnWidth
-    local by = self.y - self.height + 5
-
-    return MouseX >= bx and MouseX <= (self.x + self.btnWidth) and
-    MouseY >= by and MouseY <= (by + self.btnHeight)
+    local by = self.y - self.btnHeight - 5 -- 5px de margem acima do lote
+    
+    return mx >= bx and mx <= (bx + self.btnWidth) and 
+           my >= by and my <= (by + self.btnHeight)
 end
+--#endregion
 
+--#region carta em cima do lote
 function Lot:isCardInLot(cardX, cardY)
     local lotW, lotH = 110, 80
     local offset = 10
@@ -54,7 +58,9 @@ function Lot:isCardInLot(cardX, cardY)
            cardCenterY >= (self.y + offset) and 
            cardCenterY <= (self.y + lotH - offset)
 end
+--#endregion
 
+--#region mouse sobre o lote
 function Lot:isMouseOnLot(MouseX, MouseY)
     return MouseX >= self.x and MouseX <= (self.x + self.width) and 
     MouseY >= self.y and MouseY <= (self.y + self.height)
@@ -69,6 +75,16 @@ function Lot:CardStackedPosition(cardW, cardH)
     end
 
     return targetX, targetY
+end
+--#endregion
+
+function Lot:update(dt, mx, my, mClick)
+    -- Se o mouse foi clicado E estava em cima do botão
+    if mClick and self:isMouseOnButton(mx, my) then
+        self.isMenuOpen = not self.isMenuOpen -- Inverte (abre/fecha)
+        return true -- Avisa o manager que um botão foi clicado
+    end
+    return false
 end
 
 function Lot:draw()

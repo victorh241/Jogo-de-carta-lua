@@ -162,21 +162,23 @@ function Manager:update(dt)
         local isMouseOnButtonLot = lot:isMouseOnButton(Mouse.x, Mouse.y)
 
         --#region logica de arrastar
-        if isMouseOnlot and Mouse.isPressed then
+        if isMouseOnlot then
             Mouse.isHovering = true
-            lot.isDragging = true
-            lotBeingDragged = lot
+            if Mouse.isPressed then
+                lot.isDragging = true
+                lotBeingDragged = lot
 
-            table.remove(Lots, i)
-            table.insert(Lots, lotBeingDragged)
+                table.remove(Lots, i)
+                table.insert(Lots, lotBeingDragged)
+            end
         end
         --#endregion
 
-        --#region clicar no botão do fichario(lote)
-        if isMouseOnButtonLot and Mouse.isPressed then
-            lot.isMenuOpen = true
+        if isMouseOnButtonLot then
+            Mouse.isHovering = true
         end
-        --#endregion
+
+        lot:update(dt, Mouse.x, Mouse.y, Mouse.isPressed)
     end
 
     if lotBeingDragged ~= nil and Mouse.isPressed then
