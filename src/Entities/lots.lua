@@ -16,14 +16,28 @@ function Lot:new(x, y, name)
     setmetatable(newLot, self)
 
     --#region variaveis
-    newLot.width = 110  -- largura
-    newLot.height = 80  -- altura
+    newLot.width = 220  -- largura
+    newLot.height = 120  -- altura
     newLot.count = 0
     newLot.isDragging = false
     newLot.name = name or ""
     --#endregion
 
+    --#region menu variaveis
+    newLot.isMenuOpen = false
+    newLot.btnHeight = 20
+    newLot.btnWidth = 40
+    --#endregion
+
     return newLot
+end
+
+function Lot:isMouseOnButton(MouseX, MouseY)
+    local bx = self.x + self.width - self.btnWidth
+    local by = self.y - self.height + 5
+
+    return MouseX >= bx and MouseX <= (self.x + self.btnWidth) and
+    MouseY >= by and MouseY <= (by + self.btnHeight)
 end
 
 function Lot:isCardInLot(cardX, cardY)
@@ -42,7 +56,8 @@ function Lot:isCardInLot(cardX, cardY)
 end
 
 function Lot:isMouseOnLot(MouseX, MouseY)
-    return MouseX >= self.x and MouseX <= (self.x + self.width) and MouseY >= self.y and MouseY <= (self.y + self.height)
+    return MouseX >= self.x and MouseX <= (self.x + self.width) and 
+    MouseY >= self.y and MouseY <= (self.y + self.height)
 end
 
 function Lot:CardStackedPosition(cardW, cardH)
@@ -80,6 +95,25 @@ function Lot:draw()
 
     -- Reset de cor para não afetar outros desenhos
     love.graphics.setColor(1, 1, 1)
+
+    -- 2. Desenha o Botão (Acima do lote)
+    local bx = self.x + self.width - self.btnWidth
+    local by = self.y - self.btnHeight - 5
+    
+    love.graphics.setColor(0.2, 0.6, 0.2) -- Verde
+    love.graphics.rectangle("fill", bx, by, self.btnWidth, self.btnHeight)
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("MENU", bx + 2, by + 4)
+
+    -- 3. Desenha o Menu (Apenas se estiver aberto)
+    if self.isMenuOpen then
+        self:drawMenu()
+    end
+end
+
+function Lot:drawMenu()
+    love.graphics.setColor(1, 1, 1, 0.8)
+    love.graphics.rectangle("fill", 1280/2, 720/2, 300, 300)
 end
 
 return Lot

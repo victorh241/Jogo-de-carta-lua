@@ -25,6 +25,12 @@ local debugNumber = 0
 
 --#endregion
 
+--#region funções extras
+function lerp(a, b, dt)
+    return b + (a-b) * math.exp(-16 * dt)
+end
+--#endregion
+
 function Manager:load()
 
     -- #region cards
@@ -153,7 +159,9 @@ function Manager:update(dt)
     for i = #Lots, 1, -1 do
         local lot = Lots[i]
         local isMouseOnlot = lot:isMouseOnLot(Mouse.x, Mouse.y)
+        local isMouseOnButtonLot = lot:isMouseOnButton(Mouse.x, Mouse.y)
 
+        --#region logica de arrastar
         if isMouseOnlot and Mouse.isPressed then
             Mouse.isHovering = true
             lot.isDragging = true
@@ -162,6 +170,13 @@ function Manager:update(dt)
             table.remove(Lots, i)
             table.insert(Lots, lotBeingDragged)
         end
+        --#endregion
+
+        --#region clicar no botão do fichario(lote)
+        if isMouseOnButtonLot and Mouse.isPressed then
+            lot.isMenuOpen = true
+        end
+        --#endregion
     end
 
     if lotBeingDragged ~= nil and Mouse.isPressed then

@@ -5,7 +5,6 @@ local Lot = require("Entities/lots")
 local gameManager = require("GameManagers/GameManegar")
 
 -- #region variaveis
-local decay = -15
 local cards = {}
 local cardBeingDragged = nil
 local cardInLot = {}
@@ -14,12 +13,8 @@ local Lots = {}
 local debugNumber = 0
 --#endregion
 
-function lerp(a, b, dt)
-    return b + (a-b) * math.exp(decay * dt)
-end
-
 function love.load()
-    love.window.setMode(800, 600)
+    love.window.setMode(1280, 720)
     love.graphics.setBackgroundColor(0.2, 0.2, 0.3)
 
     gameManager:load()
