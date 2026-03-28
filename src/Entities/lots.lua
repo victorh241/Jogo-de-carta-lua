@@ -27,6 +27,10 @@ function Lot:new(x, y, name)
     newLot.isMenuOpen = false
     newLot.btnHeight = 20
     newLot.btnWidth = 40
+
+    -- intervalo entre click para fechar ou abrir menu
+    newLot.DelayConstTime = 0.35
+    newLot.CountDelay = 0
     --#endregion
 
     return newLot
@@ -78,10 +82,15 @@ function Lot:CardStackedPosition(cardW, cardH)
 end
 --#endregion
 
-function Lot:update(dt, mx, my, mClick)
+function Lot:OpenMenu(dt, mx, my, mClick)
+    if self.CountDelay > 0 then
+        self.CountDelay = self.CountDelay - dt
+    end
+
     -- Se o mouse foi clicado E estava em cima do botão
-    if mClick and self:isMouseOnButton(mx, my) then
+    if mClick and self:isMouseOnButton(mx, my) and self.CountDelay <= 0 then
         self.isMenuOpen = not self.isMenuOpen -- Inverte (abre/fecha)
+        self.CountDelay = self.DelayConstTime
         return true -- Avisa o manager que um botão foi clicado
     end
     return false
@@ -129,7 +138,7 @@ end
 
 function Lot:drawMenu()
     love.graphics.setColor(1, 1, 1, 0.8)
-    love.graphics.rectangle("fill", 1280/2, 720/2, 300, 300)
+    love.graphics.rectangle("fill", self.x - 150, self.y + 150, 300, 300)
 end
 
 return Lot

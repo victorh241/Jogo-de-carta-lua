@@ -22,11 +22,10 @@ local lotBeingDragged = nil
 
 --#region variaveis para debug
 local debugNumber = 0
-
 --#endregion
 
 --#region funções extras
-function lerp(a, b, dt)
+local function lerp(a, b, dt) -- eu só to usando o local para manter tudo no gameManager
     return b + (a-b) * math.exp(-16 * dt)
 end
 --#endregion
@@ -174,11 +173,13 @@ function Manager:update(dt)
         end
         --#endregion
 
+        --#region abrir menu logica
         if isMouseOnButtonLot then
             Mouse.isHovering = true
         end
 
-        lot:update(dt, Mouse.x, Mouse.y, Mouse.isPressed)
+        lot:OpenMenu(dt, Mouse.x, Mouse.y, Mouse.isPressed)
+        --#endregion
     end
 
     if lotBeingDragged ~= nil and Mouse.isPressed then
