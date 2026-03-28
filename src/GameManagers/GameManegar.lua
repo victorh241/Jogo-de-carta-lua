@@ -204,6 +204,11 @@ function Manager:draw()
     end
     --#endregion
 
+    --#region dinheiro
+    love.graphics.print("Money: ",1100, 20)
+    love.graphics.print(money, 1180, 20)
+    --#endregion
+
     --#region debug
     -- texto pra debugar
     love.graphics.setColor(1, 1, 1, 1)
