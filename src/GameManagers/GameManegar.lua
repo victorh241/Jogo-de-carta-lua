@@ -18,6 +18,7 @@ local cardInLot = {}
 
 local cardBeingDragged = nil
 local lotBeingDragged = nil
+local wasMousePressed = false
 --#endregion
 
 --#region variaveis para debug
@@ -28,6 +29,33 @@ local debugNumber = 0
 local function lerp(a, b, dt) -- eu só to usando o local para manter tudo no gameManager
     return b + (a-b) * math.exp(-16 * dt)
 end
+
+local function clamp(x, a, b)
+    if x < a then return a end
+    if x > b then return b end
+    return x
+end
+
+local function isPointInRect(px, py, rx, ry, rw, rh)
+    return px >= rx and px <= (rx + rw) and py >= ry and py <= (ry + rh)
+end
+--#endregion
+
+--#region UI deck/decada
+local deckUI = {
+    x = 1040,
+    y = 510,
+    w = 140,
+    h = 190
+}
+
+local decadas = { "1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s", "2020s" }
+local decadaIndex = 4 -- começa em 1980s
+local decadaBtn = {
+    w = 130,
+    h = 28,
+    gap = 8
+}
 --#endregion
 
 function Manager:load()
@@ -50,6 +78,26 @@ end
 
 function Manager:update(dt)
     Mouse:update(dt)
+
+    local mouseJustPressed = Mouse.isPressed and not wasMousePressed
+    wasMousePressed = Mouse.isPressed
+
+    --#region UI trocar decada (lado esquerdo do deck)
+    local decadaPanelX = deckUI.x - (decadaBtn.w + 14)
+    local decadaPanelY = deckUI.y + 10
+    local btnPrevX = decadaPanelX
+    local btnPrevY = decadaPanelY + 40
+    local btnNextX = decadaPanelX
+    local btnNextY = btnPrevY + decadaBtn.h + decadaBtn.gap
+
+    if mouseJustPressed and isPointInRect(Mouse.x, Mouse.y, btnPrevX, btnPrevY, decadaBtn.w, decadaBtn.h) then
+        decadaIndex = decadaIndex - 1
+        if decadaIndex < 1 then decadaIndex = #decadas end
+    elseif mouseJustPressed and isPointInRect(Mouse.x, Mouse.y, btnNextX, btnNextY, decadaBtn.w, decadaBtn.h) then
+        decadaIndex = decadaIndex + 1
+        if decadaIndex > #decadas then decadaIndex = 1 end
+    end
+    --#endregion
 
     --#region logica da carta
     Mouse.isHovering = false
@@ -75,6 +123,7 @@ function Manager:update(dt)
     if cardBeingDragged ~= nil and Mouse.isPressed then
         cardBeingDragged.x = cardBeingDragged.x + ((Mouse.x - cardBeingDragged.width/2 + 20) - cardBeingDragged.x) * dt * 15
         cardBeingDragged.y = cardBeingDragged.y + ((Mouse.y - cardBeingDragged.height/2 - 20) - cardBeingDragged.y) * dt * 15
+        cardBeingDragged.angle = lerp(cardBeingDragged.angle or 0, 0, dt)
     end
     --#endregion
 
@@ -191,9 +240,80 @@ function Manager:update(dt)
     --#region slot fichario
 
     --#endregion
+
+    --#region layout estilo balatro (mão em arco)
+    do
+        local hand = {}
+        for _, c in ipairs(Cards) do
+            if c ~= cardBeingDragged and (not c.isCardInLot) and (c.lotId == 0) then
+                table.insert(hand, c)
+            end
+        end
+
+        local n = #hand
+        if n > 0 then
+            local screenW = love.graphics.getWidth()
+            local screenH = love.graphics.getHeight()
+
+            local centerX = screenW * 0.60
+            local baseY = screenH - 170
+            local spread = clamp(46, 34, 64)
+            local maxAngle = math.rad(12)
+
+            for i, c in ipairs(hand) do
+                local t = (n == 1) and 0 or ((i - 1) / (n - 1)) * 2 - 1 -- -1..1
+                local tx = centerX + t * spread * (n - 1)
+                local ty = baseY + math.abs(t) * 26
+                local ta = t * maxAngle
+
+                c.targetX = tx
+                c.targetY = ty
+                c.targetAngle = ta
+
+                c.x = lerp(c.x, c.targetX, dt)
+                c.y = lerp(c.y, c.targetY, dt)
+                c.angle = lerp(c.angle or 0, c.targetAngle or 0, dt)
+            end
+        end
+    end
+    --#endregion
 end
 
 function Manager:draw()
+
+    --#region deck + UI decada
+    local decadaPanelX = deckUI.x - (decadaBtn.w + 14)
+    local decadaPanelY = deckUI.y + 10
+
+    -- painel decada (lado esquerdo do deck)
+    love.graphics.setColor(0, 0, 0, 0.35)
+    love.graphics.rectangle("fill", decadaPanelX - 10, decadaPanelY - 10, decadaBtn.w + 20, (decadaBtn.h * 2) + decadaBtn.gap + 72, 8, 8)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.print("Decada", decadaPanelX, decadaPanelY - 6)
+    love.graphics.print(decadas[decadaIndex], decadaPanelX, decadaPanelY + 16)
+
+    local btnPrevX = decadaPanelX
+    local btnPrevY = decadaPanelY + 40
+    local btnNextX = decadaPanelX
+    local btnNextY = btnPrevY + decadaBtn.h + decadaBtn.gap
+
+    love.graphics.setColor(0.18, 0.18, 0.22, 1)
+    love.graphics.rectangle("fill", btnPrevX, btnPrevY, decadaBtn.w, decadaBtn.h, 6, 6)
+    love.graphics.rectangle("fill", btnNextX, btnNextY, decadaBtn.w, decadaBtn.h, 6, 6)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.printf("< anterior", btnPrevX, btnPrevY + 6, decadaBtn.w, "center")
+    love.graphics.printf("proxima >", btnNextX, btnNextY + 6, decadaBtn.w, "center")
+
+    -- deck
+    love.graphics.setColor(0.1, 0.1, 0.1, 0.55)
+    love.graphics.rectangle("fill", deckUI.x, deckUI.y, deckUI.w, deckUI.h, 10, 10)
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.setLineWidth(2)
+    love.graphics.rectangle("line", deckUI.x, deckUI.y, deckUI.w, deckUI.h, 10, 10)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.printf("DECK", deckUI.x, deckUI.y + 10, deckUI.w, "center")
+    --#endregion
 
     --#region desenhar lots
     for i, lot in ipairs(Lots) do

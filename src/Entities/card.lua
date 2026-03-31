@@ -23,6 +23,10 @@ function Card:new(x, y, title)
     newCard.isInLot = false
     newCard.lotId = 0
     newCard.title = title
+    newCard.angle = 0
+    newCard.targetAngle = 0
+    newCard.targetX = x
+    newCard.targetY = y
     --#endregion
 
     --#region variaveis de atributos
@@ -59,32 +63,41 @@ function Card:isCardPicked(MouseX, MouseY, isMouseDown, cardBeingDragged)
 end
 
 function Card:draw()
+    local cx = self.x + self.width / 2
+    local cy = self.y + self.height / 2
+
+    love.graphics.push()
+    love.graphics.translate(cx, cy)
+    love.graphics.rotate(self.angle or 0)
+    love.graphics.translate(-self.width / 2, -self.height / 2)
+
     --retangulo interno
     love.graphics.setColor(1, 1, 1, 1) -- cor: branca
-    love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
+    love.graphics.rectangle("fill", 0, 0, self.width, self.height)
 
     --retangulo(linha) externo
     love.graphics.setColor(0, 0, 0)
     love.graphics.setLineWidth(1)
-    love.graphics.rectangle("line", self.x, self.y, self.width, self.height)
+    love.graphics.rectangle("line", 0, 0, self.width, self.height)
     love.graphics.setColor(1, 1, 1)
-
 
     --quadrado do titulo
     --retagunlo externo
     love.graphics.setColor(0, 0, 0)
     love.graphics.setLineWidth(3)
-    love.graphics.rectangle("line", self.x, self.y - self.height/4 + 5, self.width, 20)
+    local titleY = -self.height/4 + 5
+    love.graphics.rectangle("line", 0, titleY, self.width, 20)
     love.graphics.setColor(1, 1, 1)
 
     --retangulo interno
-    love.graphics.rectangle("fill", self.x, self.y - self.height/4 + 5, self.width, 20)
+    love.graphics.rectangle("fill", 0, titleY, self.width, 20)
 
     --texto
     love.graphics.setColor(0, 0, 0)
-    love.graphics.printf(self.title, self.x,self.y - self.height/4 + 5, self.width,"center")
+    love.graphics.printf(self.title, 0, titleY, self.width, "center")
 
-    love.graphics.setColor(1,1,1)
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.pop()
 end
 
 return Card
