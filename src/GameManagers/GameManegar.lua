@@ -166,17 +166,23 @@ function Manager:update(dt)
                     cardBeingDragged.isCardInLot = true
                 end
 
-                -- Posicionamento (Centralização e Empilhamento)
-                -- lembre fazer animação da carta entrando no lot
-                local targetX, targetY = targetLot:CardStackedPosition(cardBeingDragged.width, cardBeingDragged.height)
+                -- Se o menu estiver aberto, tenta colocar em um slot do modal
+                if targetLot.isMenuOpen and targetLot:tryPlaceCardInSlots(cardBeingDragged) then
+                    -- colocado no slot, não empilha no lote
+                else
+                    -- Posicionamento (Centralização e Empilhamento)
+                    -- lembre fazer animação da carta entrando no lot
+                    local targetX, targetY = targetLot:CardStackedPosition(cardBeingDragged.width, cardBeingDragged.height)
 
-                -- Se houver mais de uma carta, cria o efeito de pilha
-                if targetLot.count > 1 then
-                    targetY = targetY + (targetLot.count - 1) * 20 -- 20 é o espaço entre as cartas, esse valor é temporario
+                    -- Se houver mais de uma carta, cria o efeito de pilha
+                    if targetLot.count > 1 then
+                        targetY = targetY + (targetLot.count - 1) * 20 -- 20 é o espaço entre as cartas, esse valor é temporario
+                    end
+
+                    cardBeingDragged.x = targetX
+                    cardBeingDragged.y = targetY
+                    cardBeingDragged.angle = 0
                 end
-
-                cardBeingDragged.x = targetX
-                cardBeingDragged.y = targetY
 
             elseif oldLotId > 0 then
                 -- Diminui o contador do lote onde ela estava
@@ -227,7 +233,7 @@ function Manager:update(dt)
             Mouse.isHovering = true
         end
 
-        lot:OpenMenu(dt, Mouse.x, Mouse.y, Mouse.isPressed)
+        lot:OpenMenu(dt, Mouse.x, Mouse.y, mouseJustPressed)
         --#endregion
     end
 

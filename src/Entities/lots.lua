@@ -8,6 +8,10 @@ setmetatable(Lot, {__index = entity})
 -- Permite que as instâncias de Lot achem as funções de Lot
 Lot.__index = Lot
 
+local function isPointInRect(px, py, rx, ry, rw, rh)
+    return px >= rx and px <= (rx + rw) and py >= ry and py <= (ry + rh)
+end
+
 function Lot:new(x, y, name)
     -- 1. Cria a base usando a entity
     local newLot = entity:new("Lot", x, y)
@@ -33,9 +37,14 @@ function Lot:new(x, y, name)
     newLot.CountDelay = 0
 
     -- slots
-    newLot.SlotQnt = 1
+    newLot.SlotQnt = 2
     newLot.SlotOffSet = 20
-    newLot.SlotList = {}
+    newLot.SlotList = {
+        { id = "personagem", card = nil },
+        { id = "recurso", card = nil }
+    }
+
+    newLot.lastMissionSent = 0
     --#endregion
 
     return newLot
@@ -116,21 +125,119 @@ function Lot:OpenMenu(dt, mx, my, mClick)
         self.CountDelay = self.CountDelay - dt
     end
 
-    -- Se o mouse foi clicado E estava em cima do botão
+    local clicked = false
+
+    -- abre/fecha pelo botão do lote
     if mClick and self:isMouseOnButton(mx, my) and self.CountDelay <= 0 then
-        self.isMenuOpen = not self.isMenuOpen -- Inverte (abre/fecha)
+        self.isMenuOpen = not self.isMenuOpen
         self.CountDelay = self.DelayConstTime
-        return true -- Avisa o manager que um botão foi clicado
+        clicked = true
     end
+
+    if self.isMenuOpen and mClick and (not clicked) and self.CountDelay <= 0 then
+        local panel = self:getMenuRect()
+        local closeBtn = self:getCloseButtonRect()
+        local sendBtn = self:getSendButtonRect()
+
+        if isPointInRect(mx, my, closeBtn.x, closeBtn.y, closeBtn.w, closeBtn.h) then
+            self.isMenuOpen = false
+            self.CountDelay = self.DelayConstTime
+            return true
+        end
+
+        if isPointInRect(mx, my, sendBtn.x, sendBtn.y, sendBtn.w, sendBtn.h) then
+            self.lastMissionSent = self.lastMissionSent + 1
+            self.CountDelay = self.DelayConstTime
+            return true
+        end
+
+        -- clicou fora do modal -> fecha
+        if not isPointInRect(mx, my, panel.x, panel.y, panel.w, panel.h) then
+            self.isMenuOpen = false
+            self.CountDelay = self.DelayConstTime
+            return true
+        end
+    end
+
+    return clicked
+end
+
+function Lot:getMenuRect()
+    local sw = love.graphics.getWidth()
+    local sh = love.graphics.getHeight()
+    local w = sw * 0.40
+    local h = sh * 0.40
+    return {
+        x = (sw - w) / 2,
+        y = (sh - h) / 2,
+        w = w,
+        h = h
+    }
+end
+
+function Lot:getCloseButtonRect()
+    local panel = self:getMenuRect()
+    return {
+        x = panel.x + panel.w - 90,
+        y = panel.y + 12,
+        w = 78,
+        h = 26
+    }
+end
+
+function Lot:getSendButtonRect()
+    local panel = self:getMenuRect()
+    return {
+        x = panel.x + (panel.w / 2) - 110,
+        y = panel.y + panel.h - 44,
+        w = 220,
+        h = 32
+    }
+end
+
+function Lot:getSlotRects()
+    local panel = self:getMenuRect()
+    local pad = 22
+    local slotW = (panel.w - (pad * 2) - 18) / 2
+    local slotH = panel.h * 0.45
+    local y = panel.y + 70
+
+    return {
+        personagem = { x = panel.x + pad, y = y, w = slotW, h = slotH },
+        recurso = { x = panel.x + pad + slotW + 18, y = y, w = slotW, h = slotH }
+    }
+end
+
+function Lot:tryPlaceCardInSlots(card)
+    if not self.isMenuOpen then return false end
+    local slots = self:getSlotRects()
+
+    local cx = card.x + (card.width / 2)
+    local cy = card.y + (card.height / 2)
+
+    local function place(slotId, rect)
+        for _, s in ipairs(self.SlotList) do
+            if s.id == slotId then
+                s.card = card
+                card.isCardInLot = true
+                card.lotId = card.lotId or 0
+                card.x = rect.x + (rect.w / 2) - (card.width / 2)
+                card.y = rect.y + (rect.h / 2) - (card.height / 2)
+                card.angle = 0
+                return true
+            end
+        end
+        return false
+    end
+
+    if isPointInRect(cx, cy, slots.personagem.x, slots.personagem.y, slots.personagem.w, slots.personagem.h) then
+        return place("personagem", slots.personagem)
+    end
+    if isPointInRect(cx, cy, slots.recurso.x, slots.recurso.y, slots.recurso.w, slots.recurso.h) then
+        return place("recurso", slots.recurso)
+    end
+
     return false
-end
-
-function Lot:isMouseOnLot()
-
-end
-
-function Lot:UpdateSlot(dt, mx, my)
-    
 end
 
 function Lot:draw()
@@ -178,13 +285,54 @@ function Lot:dashLine() -- desenho tracejado para os slots
 end
 
 function Lot:drawMenu()
-    love.graphics.setColor(1, 1, 1, 0.8)
-    love.graphics.rectangle("fill", self.x - self.width/2 - 150, self.y - self.height/2 - 150, 450, 450)
+    local panel = self:getMenuRect()
+    local closeBtn = self:getCloseButtonRect()
+    local sendBtn = self:getSendButtonRect()
+    local slots = self:getSlotRects()
 
-    
-    for i = self.SlotQnt, 1, -1 do
-        love.graphics.rectangle("")
+    -- fundo leve (não cobre tudo)
+    love.graphics.setColor(0, 0, 0, 0.25)
+    love.graphics.rectangle("fill", panel.x - 12, panel.y - 12, panel.w + 24, panel.h + 24, 12, 12)
+
+    -- painel
+    love.graphics.setColor(0.95, 0.95, 0.95, 0.92)
+    love.graphics.rectangle("fill", panel.x, panel.y, panel.w, panel.h, 12, 12)
+    love.graphics.setColor(0, 0, 0, 0.9)
+    love.graphics.setLineWidth(2)
+    love.graphics.rectangle("line", panel.x, panel.y, panel.w, panel.h, 12, 12)
+
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.print(self.name .. " - Missao", panel.x + 16, panel.y + 14)
+
+    -- botão fechar (topo)
+    love.graphics.setColor(0.2, 0.2, 0.2, 1)
+    love.graphics.rectangle("fill", closeBtn.x, closeBtn.y, closeBtn.w, closeBtn.h, 8, 8)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.printf("FECHAR", closeBtn.x, closeBtn.y + 6, closeBtn.w, "center")
+
+    -- slots (2)
+    local function drawSlot(rect, label)
+        love.graphics.setColor(0.12, 0.12, 0.12, 0.75)
+        love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h, 10, 10)
+        love.graphics.setColor(1, 1, 1, 0.20)
+        love.graphics.setLineWidth(2)
+        love.graphics.rectangle("line", rect.x, rect.y, rect.w, rect.h, 10, 10)
+        love.graphics.setColor(1, 1, 1, 0.9)
+        love.graphics.print(label, rect.x + 10, rect.y + 10)
     end
+
+    drawSlot(slots.personagem, "Slot Personagem")
+    drawSlot(slots.recurso, "Slot Recurso")
+
+    -- botão enviar (embaixo)
+    love.graphics.setColor(0.12, 0.45, 0.18, 1)
+    love.graphics.rectangle("fill", sendBtn.x, sendBtn.y, sendBtn.w, sendBtn.h, 10, 10)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.printf("ENVIAR PARA MISSAO", sendBtn.x, sendBtn.y + 8, sendBtn.w, "center")
+    love.graphics.setColor(0, 0, 0, 0.65)
+    love.graphics.print("Enviado: " .. tostring(self.lastMissionSent), sendBtn.x, sendBtn.y + sendBtn.h + 6)
+
+    love.graphics.setColor(1, 1, 1, 1)
 end
 
 return Lot
