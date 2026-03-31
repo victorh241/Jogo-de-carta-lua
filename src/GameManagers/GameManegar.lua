@@ -187,6 +187,10 @@ function Manager:update(dt)
         lotBeingDragged.y = lotBeingDragged.y + ((Mouse.y - lotBeingDragged.height/2 - 20) - lotBeingDragged.y) * dt * 15
     end
     --#endregion
+
+    --#region slot fichario
+
+    --#endregion
 end
 
 function Manager:draw()

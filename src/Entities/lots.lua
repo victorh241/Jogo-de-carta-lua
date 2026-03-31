@@ -31,10 +31,39 @@ function Lot:new(x, y, name)
     -- intervalo entre click para fechar ou abrir menu
     newLot.DelayConstTime = 0.35
     newLot.CountDelay = 0
+
+    -- slots
+    newLot.SlotQnt = 1
+    newLot.SlotOffSet = 20
+    newLot.SlotList = {}
     --#endregion
 
     return newLot
 end
+
+--#region funções extras
+function drawDashedLine(x1, y1, x2, y2, dashLen, gapLen)
+    local dx, dy = x2 - x1, y2 - y1
+    local dist = math.sqrt(dx*dx + dy*dy) -- Distância total
+    local angle = math.atan2(dy, dx)      -- Direção da linha
+    
+    local currentDist = 0
+    while currentDist < dist do
+        -- Calcula o fim do traço (não pode passar da distância total)
+        local nextDist = math.min(currentDist + dashLen, dist)
+        
+        local sx = x1 + math.cos(angle) * currentDist
+        local sy = y1 + math.sin(angle) * currentDist
+        local ex = x1 + math.cos(angle) * nextDist
+        local ey = y1 + math.sin(angle) * nextDist
+        
+        love.graphics.line(sx, sy, ex, ey)
+        
+        -- Pula o traço + o espaço
+        currentDist = currentDist + dashLen + gapLen
+    end
+end
+--#endregion
 
 --#region hover menu
 function Lot:isMouseOnButton(mx, my)
@@ -96,6 +125,14 @@ function Lot:OpenMenu(dt, mx, my, mClick)
     return false
 end
 
+function Lot:isMouseOnLot()
+
+end
+
+function Lot:UpdateSlot(dt, mx, my)
+    
+end
+
 function Lot:draw()
     -- Retangulo interno (Preenchimento)
     love.graphics.setColor(0.56, 0.29, 0.12)
@@ -136,9 +173,18 @@ function Lot:draw()
     end
 end
 
+function Lot:dashLine() -- desenho tracejado para os slots
+    
+end
+
 function Lot:drawMenu()
     love.graphics.setColor(1, 1, 1, 0.8)
-    love.graphics.rectangle("fill", self.x - 150, self.y + 150, 300, 300)
+    love.graphics.rectangle("fill", self.x - self.width/2 - 150, self.y - self.height/2 - 150, 450, 450)
+
+    
+    for i = self.SlotQnt, 1, -1 do
+        love.graphics.rectangle("")
+    end
 end
 
 return Lot
