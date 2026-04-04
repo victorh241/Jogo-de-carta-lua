@@ -57,6 +57,7 @@ function drawDashedLine(x1, y1, x2, y2, dashLen, gapLen)
     local angle = math.atan2(dy, dx)      -- Direção da linha
     
     local currentDist = 0
+    
     while currentDist < dist do
         -- Calcula o fim do traço (não pode passar da distância total)
         local nextDist = math.min(currentDist + dashLen, dist)

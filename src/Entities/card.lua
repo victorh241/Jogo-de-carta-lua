@@ -4,10 +4,11 @@ local Card = {}
 Card.__index = Card
 setmetatable(Card, {__index = entity})
 
-
+--#region função de colisão do mouse com a carta
 local function isPointInRectangle(px, py, rx, ry, rw, rh)
     return px >= rx and px <= (rx + rw) and py >= ry and py <= (ry + rh)
 end
+--#endregion
 
 function Card:new(x, y, title)
     local newCard = entity:new("card", x, y) -- o tipo é fixo foda-se
@@ -15,13 +16,11 @@ function Card:new(x, y, title)
     setmetatable(newCard, Card)
 
     --#region variaveis de logica
-    newCard.height = 100 -- const
-    newCard.width = 70 -- const
+    newCard.height = 180 -- const
+    newCard.width = 120 -- const
     newCard.velX = 0
     newCard.velY = 0
     newCard.isDragging = false
-    newCard.isInLot = false
-    newCard.lotId = 0
     newCard.title = title
     newCard.angle = 0
     newCard.targetAngle = 0
@@ -30,7 +29,6 @@ function Card:new(x, y, title)
     --#endregion
 
     --#region variaveis de atributos
-    newCard.name = ""
     newCard.atributos = {
         strength = 0,
         inteligence = 0,
@@ -43,10 +41,13 @@ function Card:new(x, y, title)
     return newCard
 end
 
+--#region função de load
 function Card:load()
     -- essa função só esta aqui caso precise de algo
 end
+--#endregion
 
+--#region função para
 function Card:isCardPicked(MouseX, MouseY, isMouseDown, cardBeingDragged)
     self.isHovering = isPointInRectangle(MouseX, MouseY, self.x, self.y, self.width, self.height)
 
@@ -61,11 +62,13 @@ function Card:isCardPicked(MouseX, MouseY, isMouseDown, cardBeingDragged)
 
     return false
 end
+--#endregion
 
 function Card:draw()
     local cx = self.x + self.width / 2
     local cy = self.y + self.height / 2
 
+    --#region desenho externo da carta (Lembrando que tudo isso é provisório tirando o titulo talvez)
     love.graphics.push()
     love.graphics.translate(cx, cy)
     love.graphics.rotate(self.angle or 0)
@@ -80,12 +83,14 @@ function Card:draw()
     love.graphics.setLineWidth(1)
     love.graphics.rectangle("line", 0, 0, self.width, self.height)
     love.graphics.setColor(1, 1, 1)
+    --#endregion
 
+    --#region titulo
     --quadrado do titulo
     --retagunlo externo
     love.graphics.setColor(0, 0, 0)
     love.graphics.setLineWidth(3)
-    local titleY = -self.height/4 + 5
+    local titleY = -self.height/4 + 50 -- depois eu ajeito isso
     love.graphics.rectangle("line", 0, titleY, self.width, 20)
     love.graphics.setColor(1, 1, 1)
 
@@ -98,6 +103,7 @@ function Card:draw()
 
     love.graphics.setColor(1, 1, 1)
     love.graphics.pop()
+    --#endregion
 end
 
 return Card
