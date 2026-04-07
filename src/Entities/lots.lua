@@ -1,11 +1,8 @@
 local entity = require("Entities/Entity")
 -- lote agora virou um fichario
 
-
 local Lot = {}
--- Faz o Lot herdar da Entity
 setmetatable(Lot, {__index = entity})
--- Permite que as instâncias de Lot achem as funções de Lot
 Lot.__index = Lot
 
 local function isPointInRect(px, py, rx, ry, rw, rh)
@@ -13,10 +10,8 @@ local function isPointInRect(px, py, rx, ry, rw, rh)
 end
 
 function Lot:new(x, y, name)
-    -- 1. Cria a base usando a entity
     local newLot = entity:new("Lot", x, y)
 
-    -- 2. Vincula o objeto à classe Lot para ele achar o :draw() e :update()
     setmetatable(newLot, self)
 
     --#region variaveis
@@ -51,7 +46,7 @@ function Lot:new(x, y, name)
 end
 
 --#region funções extras
-function drawDashedLine(x1, y1, x2, y2, dashLen, gapLen)
+function drawDashedLine(x1, y1, x2, y2, dashLen, gapLen) -- o slot seria traçado
     local dx, dy = x2 - x1, y2 - y1
     local dist = math.sqrt(dx*dx + dy*dy) -- Distância total
     local angle = math.atan2(dy, dx)      -- Direção da linha
@@ -59,7 +54,6 @@ function drawDashedLine(x1, y1, x2, y2, dashLen, gapLen)
     local currentDist = 0
     
     while currentDist < dist do
-        -- Calcula o fim do traço (não pode passar da distância total)
         local nextDist = math.min(currentDist + dashLen, dist)
         
         local sx = x1 + math.cos(angle) * currentDist
@@ -68,8 +62,6 @@ function drawDashedLine(x1, y1, x2, y2, dashLen, gapLen)
         local ey = y1 + math.sin(angle) * nextDist
         
         love.graphics.line(sx, sy, ex, ey)
-        
-        -- Pula o traço + o espaço
         currentDist = currentDist + dashLen + gapLen
     end
 end
@@ -77,7 +69,6 @@ end
 
 --#region hover menu
 function Lot:isMouseOnButton(mx, my)
-    -- O botão ficará no canto superior direito do lote
     local bx = self.x + self.width - self.btnWidth
     local by = self.y - self.btnHeight - 5 -- 5px de margem acima do lote
     
@@ -87,15 +78,13 @@ end
 --#endregion
 
 --#region carta em cima do lote
-function Lot:isCardInLot(cardX, cardY)
+function Lot:isCardInSlot(cardX, cardY) -- depois eu mudo isso
     local lotW, lotH = 110, 80
     local offset = 10
     
-    -- Calculamos o centro da carta para uma colisão mais natural
     local cardCenterX = cardX + (70 / 2)
     local cardCenterY = cardY + (100 / 2)
 
-    -- Verifica se o centro da carta está dentro das bordas do lote (com o offset aplicado)
     return cardCenterX >= (self.x + offset) and 
            cardCenterX <= (self.x + lotW - offset) and 
            cardCenterY >= (self.y + offset) and 
@@ -148,13 +137,6 @@ function Lot:OpenMenu(dt, mx, my, mClick)
 
         if isPointInRect(mx, my, sendBtn.x, sendBtn.y, sendBtn.w, sendBtn.h) then
             self.lastMissionSent = self.lastMissionSent + 1
-            self.CountDelay = self.DelayConstTime
-            return true
-        end
-
-        -- clicou fora do modal -> fecha
-        if not isPointInRect(mx, my, panel.x, panel.y, panel.w, panel.h) then
-            self.isMenuOpen = false
             self.CountDelay = self.DelayConstTime
             return true
         end

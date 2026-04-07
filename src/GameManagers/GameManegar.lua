@@ -136,7 +136,7 @@ function Manager:update(dt)
     --#endregion
 
     --#region slot fichario
-    -- vou fazer isso depois que ajeitar o ui do deck
+    
     --#endregion
 
     --#region Deck

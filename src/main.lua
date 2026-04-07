@@ -10,7 +10,6 @@ local cardBeingDragged = nil
 local cardInLot = {}
 
 local Lots = {}
-local debugNumber = 0
 --#endregion
 
 function love.load()
