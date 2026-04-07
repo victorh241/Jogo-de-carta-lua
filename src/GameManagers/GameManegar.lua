@@ -43,7 +43,7 @@ local function clamp(x, a, b) -- boa função pra se ter
     return x
 end
 
-local function isPointInRect(px, py, rx, ry, rw, rh) -- não sei se é necessario
+local function isPointInRect(px, py, rx, ry, rw, rh) -- não sei se é necessario, mas deixa ai por hora
     return px >= rx and px <= (rx + rw) and py >= ry and py <= (ry + rh)
 end
 --#endregion
@@ -151,6 +151,7 @@ function Manager:update(dt)
     --#endregion
 
     --#region Deck
+    -- logica da mão
     do
         local hand = {}
         for _, c in ipairs(Cards) do
@@ -185,6 +186,44 @@ function Manager:update(dt)
             end
         end
     end
+
+    --logica de trocar de deck
+
+
+    --#endregion
+end
+
+local function DeckUIDraw()
+    -- varivel geral da ui
+    local deckIndex = 1 -- index ordens 1: personagens, 2: recursos
+    local deckUIWidth = 200
+    local deckUIHeight = 200
+
+    --#region Caixa principal
+    -- posição geral da caixa
+    local deckPosX = (love.graphics.getWidth() - love.graphics.getWidth()/12) - deckUIWidth / 2
+    local deckPosY = love.graphics.getHeight() - deckUIHeight - 10
+
+    -- linha de fora
+    love.graphics.setColor(0,0,0)
+    love.graphics.setLineWidth(1)
+    love.graphics.rectangle("line", deckPosX, deckPosY, deckUIWidth + 1, deckUIHeight + 1)
+
+    -- interno
+    love.graphics.setColor(1,1,1, 0.6)
+    love.graphics.rectangle("fill", deckPosX, deckPosY, deckUIWidth, deckUIHeight)
+
+    -- button 1
+    local bntHeight = 40
+    local bntWidth = 40
+
+    local bnt1PosX
+    local bnt1PosY
+
+    -- button 2
+    local bnt2PosX
+    local bnt2PosY
+
     --#endregion
 end
 
@@ -214,6 +253,10 @@ function Manager:draw()
     love.graphics.print(Mouse.x, 500, 20)
     love.graphics.print(Mouse.y, 600, 20)
     -- #cards para saber o tamanho de uma tabela é dessa forma
+    --#endregion
+
+    --#region deck
+    DeckUIDraw()
     --#endregion
 
     Mouse:draw()

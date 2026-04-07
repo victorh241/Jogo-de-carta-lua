@@ -264,10 +264,6 @@ function Lot:draw()
     end
 end
 
-function Lot:dashLine() -- desenho tracejado para os slots
-    
-end
-
 function Lot:drawMenu()
     local panel = self:getMenuRect()
     local closeBtn = self:getCloseButtonRect()
@@ -295,7 +291,7 @@ function Lot:drawMenu()
     love.graphics.printf("FECHAR", closeBtn.x, closeBtn.y + 6, closeBtn.w, "center")
 
     -- slots (2)
-    local function drawSlot(rect, label)
+    local function drawSlot(rect, label) -- lembrete pode fazer esse tipo de coisa
         love.graphics.setColor(0.12, 0.12, 0.12, 0.75)
         love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h, 10, 10)
         love.graphics.setColor(1, 1, 1, 0.20)
