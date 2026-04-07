@@ -1,6 +1,6 @@
 local Mouse = {}
 
-local imageCursor -- por hora eu não tenho vou fazer uma bola transparente
+local imageCursor -- por hora eu não tenho vou fazer uma bola
 
 function Mouse:load(x, y)
     Mouse = {
@@ -14,13 +14,13 @@ function Mouse:load(x, y)
     setmetatable(Mouse, {__index = Mouse})
 end
 
-function Mouse:update(dt)
+function Mouse:update(dt) -- só coisa basica o bruto eu vou colocar no gamamaneger
     self.x = love.mouse.getX()
     self.y = love.mouse.getY()
 end
 
 function Mouse:draw()
-    if Mouse.isPressed then
+    if Mouse.isPressed then -- as cores só para debugging
         love.graphics.setColor(0, 1, 0, 1) -- cor: azul
     else
         love.graphics.setColor(0, 0, 1, 1) -- cor: verde
@@ -33,13 +33,13 @@ function Mouse:draw()
     love.graphics.circle("fill", Mouse.x, Mouse.y, 15)
 end
 
-function love.mousepressed(x, y, button, istouch)
+function love.mousepressed(x, y, button, istouch) -- função para saber se o mouse foi precionado
     if button == 1 then
         Mouse.isPressed = true
     end
 end
 
-function love.mousereleased(x, y, button, istouch)
+function love.mousereleased(x, y, button, istouch) -- função para saber se o mouse foi solto
     if button == 1 then
         Mouse.isPressed = false
     end

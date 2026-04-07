@@ -10,26 +10,34 @@ local function isPointInRectangle(px, py, rx, ry, rw, rh)
 end
 --#endregion
 
-function Card:new(x, y, title)
+function Card:new(x, y, title, cardType)
     local newCard = entity:new("card", x, y) -- o tipo é fixo foda-se
 
     setmetatable(newCard, Card)
 
     --#region variaveis de logica
+    --constantes
     newCard.height = 180 -- const
     newCard.width = 120 -- const
+
+    -- variaveis relacionados ao ato de pegar a carta
     newCard.velX = 0
     newCard.velY = 0
     newCard.isDragging = false
-    newCard.title = title
-    newCard.angle = 0
-    newCard.targetAngle = 0
     newCard.targetX = x
     newCard.targetY = y
+
+    --tipagem e individualização da carta
+    newCard.title = title
+    newCard.cardType = cardType or ""
+
+    --deck
+    newCard.angle = 0
+    newCard.targetAngle = 0
     --#endregion
 
     --#region variaveis de atributos
-    newCard.atributos = {
+    newCard.atributos = {-- atributo de cada carta depois da missão funcionar eu vejo isso
         strength = 0,
         inteligence = 0,
         dexterity = 0,
@@ -47,7 +55,7 @@ function Card:load()
 end
 --#endregion
 
---#region função para
+--#region função para saber se a carta foi pegada ou não
 function Card:isCardPicked(MouseX, MouseY, isMouseDown, cardBeingDragged)
     self.isHovering = isPointInRectangle(MouseX, MouseY, self.x, self.y, self.width, self.height)
 
@@ -65,8 +73,9 @@ end
 --#endregion
 
 function Card:draw()
-    local cx = self.x + self.width / 2
-    local cy = self.y + self.height / 2
+    -- variaveis para orientação
+    local cx = self.x + self.width / 2 -- centro x
+    local cy = self.y + self.height / 2 -- centro y
 
     --#region desenho externo da carta (Lembrando que tudo isso é provisório tirando o titulo talvez)
     love.graphics.push()

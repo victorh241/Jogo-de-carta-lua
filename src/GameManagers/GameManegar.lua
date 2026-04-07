@@ -12,13 +12,24 @@ local Lot = require("Entities/lots")
 --#endregion
 
 -- #region variaveis para logica das entidades e outros
+--variavel das cartas
 local Cards = {}
+local CardsPeople = {}
+local CardsRessourcers = {}
+
+-- variaveis para o fichario
 local Lots = {} -- fichario agora
 local cardInSlot = {}
 
 local cardBeingDragged = nil
 local lotBeingDragged = nil
 local wasMousePressed = false
+
+-- ui deck
+-- o ui vai ter que ficar no canto inferior direito
+local UIdeckChang
+
+
 --#endregion
 
 --#region funções extras

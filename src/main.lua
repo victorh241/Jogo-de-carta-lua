@@ -4,14 +4,6 @@ local Card = require("Entities/Card")
 local Lot = require("Entities/lots")
 local gameManager = require("GameManagers/GameManegar")
 
--- #region variaveis
-local cards = {}
-local cardBeingDragged = nil
-local cardInLot = {}
-
-local Lots = {}
---#endregion
-
 function love.load()
     love.window.setMode(1280, 720)
     love.graphics.setBackgroundColor(0.2, 0.2, 0.3)

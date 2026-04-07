@@ -1,11 +1,12 @@
 local entity = require("Entities/Entity")
 -- lote agora virou um fichario
+-- depois eu dou uma estuda nesse codigo
 
 local Lot = {}
 setmetatable(Lot, {__index = entity})
 Lot.__index = Lot
 
-local function isPointInRect(px, py, rx, ry, rw, rh)
+local function isPointInRect(px, py, rx, ry, rw, rh) -- função basica também para saber se tem um determinado ponto em cima do fichario
     return px >= rx and px <= (rx + rw) and py >= ry and py <= (ry + rh)
 end
 
