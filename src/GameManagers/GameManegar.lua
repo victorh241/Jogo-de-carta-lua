@@ -17,6 +17,7 @@ local Cards = {}
 local CardsPeople = {}
 local CardsRessourcers = {}
 
+local deckIndex = 1 -- index ordens 1: personagens, 2: recursos
 -- variaveis para o fichario
 local Lots = {} -- fichario agora
 local cardInSlot = {}
@@ -29,7 +30,8 @@ local wasMousePressed = false
 -- o ui vai ter que ficar no canto inferior direito
 local UIdeckChang
 
-
+local fontSizeDeck = love.graphics.newFont(30)
+local normalFont = love.graphics.newFont(10)
 --#endregion
 
 --#region funções extras
@@ -151,6 +153,11 @@ function Manager:update(dt)
     --#endregion
 
     --#region Deck
+    -- index hand
+    if isPointInRect() then
+        
+    end
+
     -- logica da mão
     do
         local hand = {}
@@ -193,36 +200,87 @@ function Manager:update(dt)
     --#endregion
 end
 
+local function getButtonDeckUI()
+
+    return {
+        x = 0,
+        y = 0,
+        w = 30,
+        h = 30
+    }
+end
+
+local function getDeckUIRect()
+    local sw = love.graphics.getWidth()
+    local sh = love.graphics.getHeight()
+
+
+    return {
+        x = sw - sw/12 - 100,
+        y = sh - 210,
+        w = 200, -- width
+        h = 200 -- height
+    }
+end
+
 local function DeckUIDraw()
     -- varivel geral da ui
-    local deckIndex = 1 -- index ordens 1: personagens, 2: recursos
-    local deckUIWidth = 200
-    local deckUIHeight = 200
+    local deckComponent = getDeckUIRect()
 
     --#region Caixa principal
     -- posição geral da caixa
-    local deckPosX = (love.graphics.getWidth() - love.graphics.getWidth()/12) - deckUIWidth / 2
-    local deckPosY = love.graphics.getHeight() - deckUIHeight - 10
 
     -- linha de fora
     love.graphics.setColor(0,0,0)
     love.graphics.setLineWidth(1)
-    love.graphics.rectangle("line", deckPosX, deckPosY, deckUIWidth + 1, deckUIHeight + 1)
+    love.graphics.rectangle("line", deckComponent.x, deckComponent.y, deckComponent.w + 1, deckComponent.h + 1)
 
     -- interno
     love.graphics.setColor(1,1,1, 0.6)
-    love.graphics.rectangle("fill", deckPosX, deckPosY, deckUIWidth, deckUIHeight)
+    love.graphics.rectangle("fill", deckComponent.x, deckComponent.y, deckComponent.w, deckComponent.h)
 
-    -- button 1
-    local bntHeight = 40
-    local bntWidth = 40
+    --#region button 1
+    local bntHeight = 30
+    local bntWidth = 30
 
-    local bnt1PosX
-    local bnt1PosY
+    local bnt1PosX = deckPosX + bntWidth - bntWidth/2
+    local bnt1PosY = deckPosY + bntHeight
 
-    -- button 2
-    local bnt2PosX
-    local bnt2PosY
+    --linha de fora do botão
+    love.graphics.setColor(0,0,0)
+    love.graphics.setLineWidth(1)
+    love.graphics.rectangle("line", bnt1PosX, bnt1PosY, bntHeight, bntWidth)
+
+    --interno
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("fill", bnt1PosX, bnt1PosX, bntWidth, bntHeight)
+
+    --texto
+    love.graphics.setColor(0,0,0)
+    love.graphics.setFont(fontSizeDeck)
+    love.graphics.printf("+", bnt1PosX, bnt1PosY - 4, 30, "center")
+    
+    --#endregion
+
+    --#region button 2
+    local bnt2PosX = deckPosX + bntWidth*5
+    local bnt2PosY = bnt1PosY
+
+    --linha externa
+    love.graphics.setColor(0,0,0)
+    love.graphics.setLineWidth(1)
+    love.graphics.rectangle("line", bnt2PosX, bnt2PosY, bntHeight, bntWidth)
+
+    --interno
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("fill", bnt2PosX, bnt2PosY, bntHeight, bntWidth)
+    
+    --texto
+    love.graphics.setColor(0,0,0)
+    love.graphics.setFont(fontSizeDeck)
+    love.graphics.printf("-", bnt2PosX, bnt2PosY- 4, 30, "center")
+    love.graphics.setFont(normalFont)
+    --#endregion
 
     --#endregion
 end
