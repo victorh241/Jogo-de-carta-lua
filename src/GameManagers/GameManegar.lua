@@ -200,16 +200,6 @@ function Manager:update(dt)
     --#endregion
 end
 
-local function getButtonDeckUI()
-
-    return {
-        x = 0,
-        y = 0,
-        w = 30,
-        h = 30
-    }
-end
-
 local function getDeckUIRect()
     local sw = love.graphics.getWidth()
     local sh = love.graphics.getHeight()
@@ -220,6 +210,17 @@ local function getDeckUIRect()
         y = sh - 210,
         w = 200, -- width
         h = 200 -- height
+    }
+end
+
+local function getButtonInCreaseDeckUI()
+    local deckUI = getDeckUIRect()
+
+    return {
+        x = 0,
+        y = 0,
+        w = 30,
+        h = 30
     }
 end
 
@@ -240,8 +241,7 @@ local function DeckUIDraw()
     love.graphics.rectangle("fill", deckComponent.x, deckComponent.y, deckComponent.w, deckComponent.h)
 
     --#region button 1
-    local bntHeight = 30
-    local bntWidth = 30
+    local button = getButtonDeckUI()
 
     local bnt1PosX = deckPosX + bntWidth - bntWidth/2
     local bnt1PosY = deckPosY + bntHeight
@@ -249,7 +249,7 @@ local function DeckUIDraw()
     --linha de fora do botão
     love.graphics.setColor(0,0,0)
     love.graphics.setLineWidth(1)
-    love.graphics.rectangle("line", bnt1PosX, bnt1PosY, bntHeight, bntWidth)
+    love.graphics.rectangle("line", bnt1PosX, bnt1PosY, button.w, button.h)
 
     --interno
     love.graphics.setColor(1,1,1)
