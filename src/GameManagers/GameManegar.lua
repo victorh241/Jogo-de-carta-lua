@@ -60,11 +60,124 @@ function Manager:load()
     table.insert(Cards, CardTest1)
     table.insert(Cards, CardTest2)
     table.insert(Cards, CardTest3)
+    table.insert(CardsPeople, CardTest1)
+    table.insert(CardsPeople, CardTest2)
+    table.insert(CardsPeople, CardTest3)
+
+    local cardRTest1 = Card:new(1,1, "Pá")
+    local cardRTest2 = Card:new(1,1, "Pistola")
+
+    table.insert(CardsRessourcers, cardRTest1)
+    table.insert(CardsRessourcers, cardRTest2)
     --#endregion
 
     --#region lots
     local lotTest1 = Lot:new(100, 200, "Misson")
     table.insert(Lots, lotTest1)
+    --#endregion
+end
+
+--#region Hud do deck
+local function getDeckUIRect()
+    local sw = love.graphics.getWidth()
+    local sh = love.graphics.getHeight()
+
+
+    return {
+        x = sw - sw/12 - 100,
+        y = sh - 210,
+        w = 200, -- width
+        h = 200 -- height
+    }
+end
+
+local function getButtonIncreaseDeckUI() -- so pra lembra que o centro está no ponto esquerdo do componente
+    local deckUI = getDeckUIRect()
+
+    return {
+        x = deckUI.x + 30,
+        y = deckUI.y + 30,
+        w = 30,
+        h = 30
+    }
+end
+
+-- melhor dividir dessa forma
+local function getButtonDecreaseDeckUI()
+    local deckUI = getDeckUIRect()
+
+    return {
+        x = deckUI.x + 30 + deckUI.w/2 + 10,
+        y = deckUI.y + 30,
+        w = 30,
+        h = 30
+    }
+end
+--#endregion
+
+-- tem muita coisa pra desenhar por isso essa função
+local function DeckUIDraw()
+    -- varivel geral da ui
+    local deckComponent = getDeckUIRect()
+
+    --#region Caixa principal
+    -- posição geral da caixa
+
+    -- linha de fora
+    love.graphics.setColor(0,0,0)
+    love.graphics.setLineWidth(1)
+    love.graphics.rectangle("line", deckComponent.x, deckComponent.y, deckComponent.w + 1, deckComponent.h + 1)
+
+    -- interno
+    love.graphics.setColor(1,1,1, 0.6)
+    love.graphics.rectangle("fill", deckComponent.x, deckComponent.y, deckComponent.w, deckComponent.h)
+
+    --#region button 1
+    local button1 = getButtonIncreaseDeckUI()
+
+    --linha de fora do botão
+    love.graphics.setColor(0,0,0)
+    love.graphics.setLineWidth(1)
+    love.graphics.rectangle("line", button1.x, button1.y, button1.w, button1.h)
+
+    --interno
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("fill", button1.x, button1.y, button1.w, button1.h)
+
+    --texto
+    love.graphics.setColor(0,0,0)
+    love.graphics.setFont(fontSizeDeck)
+    love.graphics.printf("+", button1.x, button1.y - 4, 30, "center")
+    
+    --#endregion
+
+    --#region button 2
+    local button2 = getButtonDecreaseDeckUI()
+
+    --linha externa
+    love.graphics.setColor(0,0,0)
+    love.graphics.setLineWidth(1)
+    love.graphics.rectangle("line", button2.x, button2.y, button2.w, button2.h)
+
+    --interno
+    love.graphics.setColor(1,1,1)
+    love.graphics.rectangle("fill", button2.x, button2.y, button2.w, button2.h)
+    
+    --texto
+    love.graphics.setColor(0,0,0)
+    love.graphics.setFont(fontSizeDeck)
+    love.graphics.printf("-", button2.x, button2.y- 4, 30, "center")
+    love.graphics.setFont(normalFont)
+    --#endregion
+
+    --#region titulo para o index do tipo de deck que o jogador está na mão
+    if deckIndex == 1 then
+        love.graphics.printf("Personagens", deckComponent.x + deckComponent.w/2 - 40, deckComponent.y + deckComponent.h/2, 80,"center") -- pensar como isso aqui vai ser primeiro
+    end
+    --#endregion
+
+    -- reset só caso tenha alguma coisa que não tenha esse reset
+    love.graphics.setColor(1,1,1)
     --#endregion
 end
 
@@ -193,108 +306,8 @@ function Manager:update(dt)
     end
 
     --logica de trocar de deck
-
-
-    --#endregion
-end
-
-local function getDeckUIRect()
-    local sw = love.graphics.getWidth()
-    local sh = love.graphics.getHeight()
-
-
-    return {
-        x = sw - sw/12 - 100,
-        y = sh - 210,
-        w = 200, -- width
-        h = 200 -- height
-    }
-end
-
-local function getButtonIncreaseDeckUI() -- so pra lembra que o centro está no ponto esquerdo do componente
-    local deckUI = getDeckUIRect()
-
-    return {
-        x = deckUI.x + 30,
-        y = deckUI.y + 30,
-        w = 30,
-        h = 30
-    }
-end
-
-local function getButtonDecreaseDeckUI()
-    local deckUI = getDeckUIRect()
-
-    return {
-        x = deckUI.x + 30 + deckUI.w/2 + 10,
-        y = deckUI.y + 30,
-        w = 30,
-        h = 30
-    }
-end
-
-local function DeckUIDraw()
-    -- varivel geral da ui
-    local deckComponent = getDeckUIRect()
-
-    --#region Caixa principal
-    -- posição geral da caixa
-
-    -- linha de fora
-    love.graphics.setColor(0,0,0)
-    love.graphics.setLineWidth(1)
-    love.graphics.rectangle("line", deckComponent.x, deckComponent.y, deckComponent.w + 1, deckComponent.h + 1)
-
-    -- interno
-    love.graphics.setColor(1,1,1, 0.6)
-    love.graphics.rectangle("fill", deckComponent.x, deckComponent.y, deckComponent.w, deckComponent.h)
-
-    --#region button 1
-    local button1 = getButtonIncreaseDeckUI()
-
-    --linha de fora do botão
-    love.graphics.setColor(0,0,0)
-    love.graphics.setLineWidth(1)
-    love.graphics.rectangle("line", button1.x, button1.y, button1.w, button1.h)
-
-    --interno
-    love.graphics.setColor(1,1,1)
-    love.graphics.rectangle("fill", button1.x, button1.y, button1.w, button1.h)
-
-    --texto
-    love.graphics.setColor(0,0,0)
-    love.graphics.setFont(fontSizeDeck)
-    love.graphics.printf("+", button1.x, button1.y - 4, 30, "center")
     
-    --#endregion
 
-    --#region button 2
-    local button2 = getButtonDecreaseDeckUI()
-
-    --linha externa
-    love.graphics.setColor(0,0,0)
-    love.graphics.setLineWidth(1)
-    love.graphics.rectangle("line", button2.x, button2.y, button2.w, button2.h)
-
-    --interno
-    love.graphics.setColor(1,1,1)
-    love.graphics.rectangle("fill", button2.x, button2.y, button2.w, button2.h)
-    
-    --texto
-    love.graphics.setColor(0,0,0)
-    love.graphics.setFont(fontSizeDeck)
-    love.graphics.printf("-", button2.x, button2.y- 4, 30, "center")
-    love.graphics.setFont(normalFont)
-    --#endregion
-
-    --#region titulo para o index do tipo de deck que o jogador está na mão
-    if deckIndex == 1 then
-        love.graphics.printf("Personagens", deckComponent.x + deckComponent.w/2 - 40, deckComponent.y + deckComponent.h/2, 80,"center") -- pensar como isso aqui vai ser primeiro
-    end
-    --#endregion
-
-    -- reset só caso tenha alguma coisa que não tenha esse reset
-    love.graphics.setColor(1,1,1)
     --#endregion
 end
 
